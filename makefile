@@ -8,7 +8,7 @@ TEST_PATH= ./test/...
 BUILD_PATH=./build
 GOGENERATE=${GOCMD} generate
 
-.PHONY: all test clear
+.PHONY: all test clear build
 
 all: 
 	test build
@@ -17,13 +17,18 @@ build:
 	git submodule update --init --recursive
 	mkdir -p ${BUILD_PATH}
 	${GOBUILD} -o ${BUILD_PATH}/${BINARY_NAME}
+
+build-all:
+	make build
+	cd ./comunica-feature-link-traversal && yarn install
+
 test: 
 	$(GOTEST) -v ${TEST_PATH}
 clear: 
 	rm -f ${BUILD_PATH}/$(BINARY_NAME)
 	rm -f ${BUILD_PATH}/$(BINARY_UNIX)
 run:
-	git submodule update --init --recursive
-	mkdir -p ${BUILD_PATH}
-	build
 	${BUILD_PATH}/$(BINARY_NAME)
+build-run:
+	make build
+	make run
