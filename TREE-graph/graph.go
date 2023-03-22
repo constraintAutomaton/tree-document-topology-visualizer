@@ -8,6 +8,10 @@ import (
 
 var nNode uint = 0
 
+func ResetNodeCounter() {
+	nNode = 0
+}
+
 type Node struct {
 	url string
 	id  uint
@@ -17,11 +21,12 @@ func (n Node) Url() string {
 	return n.url
 }
 
-func (n Node) Id() uint {
-	return n.id
+func (n Node) Id() string {
+	return fmt.Sprintf("n%v", n.id)
 }
 
 func NewNode(url string) Node {
+	defer func() { nNode++ }()
 	return Node{
 		url: url,
 		id:  nNode,
@@ -31,7 +36,6 @@ func NewNode(url string) Node {
 type Relation struct {
 	RawOperator string
 	RawLiteral  string
-	Origin      Node
 	Destination Node
 }
 
@@ -46,6 +50,9 @@ func (r Relation) Operator() string {
 func (r Relation) Literal() string {
 	rawLiteralStrip := r.RawLiteral[1:]
 	indexLastGuillemet := strings.Index(rawLiteralStrip, "\"")
+	if indexLastGuillemet == -1 || indexLastGuillemet == 0 || strings.Count(r.RawLiteral, "\"") != 2 {
+		log.Panic("the literal should be between guillement")
+	}
 	return rawLiteralStrip[:indexLastGuillemet]
 }
 
