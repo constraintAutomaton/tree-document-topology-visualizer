@@ -8,7 +8,7 @@ import (
 )
 
 const BINARY_PATH = "./comunica-feature-link-traversal/engines/query-sparql-link-traversal/bin/query.js"
-const PATH_FILE_SPARQL_QUERY_GETTING_TREE_RELATIONS = "./communication/SPARQL_query_getting_TREE_relations"
+const PATH_FILE_SPARQL_QUERY_GETTING_TREE_RELATIONS = "./communication/comunica_getting_relation_query"
 
 func GetTreeRelation(datasource string) ([]SparqlRelationOutput, error) {
 	command := fmt.Sprintf("node %v %v -f %v", BINARY_PATH, datasource, PATH_FILE_SPARQL_QUERY_GETTING_TREE_RELATIONS)
