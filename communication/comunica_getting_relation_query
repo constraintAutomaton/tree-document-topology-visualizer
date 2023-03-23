@@ -2,14 +2,14 @@ PREFIX tree: <https://w3id.org/tree#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
 SELECT ?node ?nextNode ?operator ?value ?remainingItems WHERE {
-    ?node tree:relation ?relation .
-  	?relation tree:node ?nextNode .
+  ?node tree:relation ?relation .
+  ?relation tree:node ?nextNode .
   OPTIONAL {
   	?relation rdf:type ?operator.
-    ?relation tree:value ?value .
+  	?relation tree:value ?value .
   }
   
   OPTIONAL {
-      ?relation tree:remainingItems ?remainingItems .
+  	?relation tree:remainingItems ?remainingItems .
   }    
 }

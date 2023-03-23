@@ -3,6 +3,7 @@ package communication
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -14,6 +15,8 @@ func GetTreeRelation(datasource string) ([]SparqlRelationOutput, error) {
 	command := fmt.Sprintf("node %v %v -f %v", BINARY_PATH, datasource, PATH_FILE_SPARQL_QUERY_GETTING_TREE_RELATIONS)
 	parts := strings.Fields(command)
 	cmd := exec.Command(parts[0], parts[1:]...)
+	cmd.Env = os.Environ()
+	cmd.Env = append(cmd.Env, "COMUNICA_CONFIG='./comunica-feature-link-traversal/engines/config-query-sparql-link-traversal/config/config-tree.json'")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return nil, err
