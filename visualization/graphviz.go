@@ -14,7 +14,7 @@ func GenerateDotFileFromTreeGraph(treeGraph treegraph.Graph) {
 	g := graphviz.New()
 	nodeRegistry := map[treegraph.Node]*cgraph.Node{}
 	graph, err := g.Graph()
-	graph.SetRankDir(cgraph.RLRank)
+	graph = graph.SetRankDir(cgraph.LRRank)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -25,18 +25,24 @@ func GenerateDotFileFromTreeGraph(treeGraph treegraph.Graph) {
 		g.Close()
 	}()
 
-	for node := range treeGraph {
-		n, err := graph.CreateNode(node.Url)
-		if err != nil {
-			log.Fatal(err)
+	for node, relations := range treeGraph {
+		if _, exist := nodeRegistry[node]; !exist {
+			n := createNode(node, graph)
+			nodeRegistry[node] = n
 
 		}
-		nodeRegistry[node] = n
-	}
 
-	for node, relations := range treeGraph {
 		for _, relation := range relations {
-			e, err := graph.CreateEdge(relation.Equation(), nodeRegistry[node], nodeRegistry[relation.Destination])
+			var destinationNode *cgraph.Node
+			if n, exist := nodeRegistry[relation.Destination]; exist {
+				destinationNode = n
+
+			} else {
+				n := createNode(relation.Destination, graph)
+				nodeRegistry[relation.Destination] = n
+				destinationNode = n
+			}
+			e, err := graph.CreateEdge(relation.Equation(), nodeRegistry[node], destinationNode)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -59,4 +65,17 @@ func GenerateDotFileFromTreeGraph(treeGraph treegraph.Graph) {
 		log.Fatal(err)
 	}
 
+}
+
+func createNode(node treegraph.Node, graph *cgraph.Graph) *cgraph.Node {
+	node.BuildId()
+	n, err := graph.CreateNode(node.Url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	n = n.SetLabel(node.Id())
+	n = n.SetURL(node.Url)
+	n = n.SetShape(cgraph.BoxShape)
+	//n = n.SetTarget()
+	return n
 }

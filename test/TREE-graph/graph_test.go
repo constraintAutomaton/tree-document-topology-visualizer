@@ -130,7 +130,7 @@ func TestARelationShouldReturnAnEquationOfTheRightFormat(t *testing.T) {
 	aNode := treegraph.Node{Url: ""}
 	rawLiteral := "\"2\""
 	destination := aNode
-	correctEquation := "x > 2"
+	correctEquation := "m > 2"
 
 	relation := treegraph.Relation{
 		RawOperator: "https://w3id.org/tree#GreaterThanRelation",
@@ -153,7 +153,7 @@ func TestARelationShouldPanicIfTheOperatorIsNotValid(t *testing.T) {
 	aNode := treegraph.Node{Url: ""}
 	rawLiteral := "\"2\""
 	destination := aNode
-	correctEquation := "x > 2"
+	correctEquation := "m > 2"
 
 	relation := treegraph.Relation{
 		RawOperator: "https://w3id./tree#GreaterThanRelation",
@@ -176,7 +176,7 @@ func TestARelationShouldPanicIfTheLiteralIsNotValid(t *testing.T) {
 	aNode := treegraph.Node{Url: ""}
 	rawLiteral := "\"2"
 	destination := aNode
-	correctEquation := "x > 2"
+	correctEquation := "m > 2"
 
 	relation := treegraph.Relation{
 		RawOperator: "https://w3id.org/tree#GreaterThanRelation",

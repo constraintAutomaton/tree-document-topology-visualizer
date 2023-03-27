@@ -19,8 +19,5 @@ func (n Node) Id() string {
 
 func (n *Node) BuildId() {
 	defer func() { nNode++ }()
-	if n.id != 0 {
-		n.id = nNode
-	}
-
+	n.id = nNode
 }

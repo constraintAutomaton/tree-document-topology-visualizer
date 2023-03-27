@@ -30,5 +30,5 @@ func (r Relation) Literal() string {
 }
 
 func (r Relation) Equation() string {
-	return fmt.Sprintf("x %v %v", r.Operator(), r.Literal())
+	return fmt.Sprintf("m %v %v", r.Operator(), r.Literal())
 }
