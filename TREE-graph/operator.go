@@ -5,9 +5,9 @@ func OperatorMapping() *map[string]string {
 }
 
 var operatorMapping = map[string]string{
-	"https://w3id.org/tree#PrefixRelation":               "PrefixRelation",
-	"https://w3id.org/tree#SubstringRelation":            "SubstringRelation",
-	"https://w3id.org/tree#SuffixRelation":               "SuffixRelation",
+	"https://w3id.org/tree#PrefixRelation":               "IsPrefixRelationOf",
+	"https://w3id.org/tree#SubstringRelation":            "IsSubstringRelationOf",
+	"https://w3id.org/tree#SuffixRelation":               "IsSuffixRelationOf",
 	"https://w3id.org/tree#GreaterThanRelation":          ">",
 	"https://w3id.org/tree#GreaterThanOrEqualToRelation": "≥",
 	"https://w3id.org/tree#LessThanRelation":             "<",
