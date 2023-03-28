@@ -7,4 +7,4 @@ SELECT ?node ?nextNode ?operator ?value WHERE {
   
   ?relation rdf:type ?operator.
   ?relation tree:value ?value .
-}
+}LIMIT 1000

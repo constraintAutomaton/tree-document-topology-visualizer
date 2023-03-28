@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	treeDocument := "https://treecg.github.io/demo_data/vtmk.ttl" //"http://localhost:3000/ldes/test"
+	treeDocument := "https://demo.netwerkdigitaalerfgoed.nl/fragments/wo2/" //"http://localhost:3000/ldes/test"
+	graphPath := "./generated/graph.svg"
 	fmt.Println("Starting")
 	queryOutput, err := communication.GetTreeRelation(treeDocument)
 	if err != nil {
@@ -17,9 +18,8 @@ func main() {
 	}
 	fmt.Println("Query executed")
 	graph := treegraph.NewGraphFromSparlRelationOutputs(queryOutput)
-	fmt.Printf("%+v", len(queryOutput))
 	fmt.Println("Graph of the TREE document constituted")
-	visualization.GenerateDotFileFromTreeGraph(graph)
+	visualization.GenerateGraphvizGraph(graph, graphPath)
 	fmt.Println("Visualization generated")
 
 }

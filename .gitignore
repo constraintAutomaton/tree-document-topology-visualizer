@@ -1,4 +1,4 @@
 build/*
 !build/.gitkeep
-graph.gv
-graph.svg
+generated/*
+!generated/.gitkeep

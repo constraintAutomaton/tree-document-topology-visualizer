@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"log"
 	"os"
+	"path"
 	treegraph "tree-document-topology-visualizer/TREE-graph"
 
 	graphviz "github.com/goccy/go-graphviz"
 	"github.com/goccy/go-graphviz/cgraph"
 )
 
-func GenerateDotFileFromTreeGraph(treeGraph treegraph.Graph) {
+func GenerateGraphvizGraph(treeGraph treegraph.Graph, graphPath string) {
 	g := graphviz.New()
 	nodeRegistry := map[treegraph.Node]*cgraph.Node{}
 	graph, err := g.Graph()
@@ -49,20 +50,32 @@ func GenerateDotFileFromTreeGraph(treeGraph treegraph.Graph) {
 			e.SetLabel(relation.Equation())
 		}
 	}
+	if extension := path.Ext(graphPath); extension != "" {
+		GenerateFile(g, graph, graphviz.Format(extension[1:]), graphPath)
+	} else {
+		log.Fatalln("The path of the output graph as no extension")
+	}
+}
 
+func GenerateFile(instance *graphviz.Graphviz, graph *cgraph.Graph, format graphviz.Format, path string) {
 	var buf bytes.Buffer
-	if err := g.Render(graph, "dot", &buf); err != nil {
+	if err := instance.Render(graph, format, &buf); err != nil {
 		log.Fatal(err)
 	}
-
-	f, err := os.Create("./graph.gv") // creates a file at current directory
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-	_, err = f.Write(buf.Bytes())
-	if err != nil {
-		log.Fatal(err)
+	if format == graphviz.XDOT {
+		f, err := os.Create(path) // creates a file at current directory
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer f.Close()
+		_, err = f.Write(buf.Bytes())
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		if err := instance.RenderFilename(graph, format, path); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 }
@@ -76,6 +89,6 @@ func createNode(node treegraph.Node, graph *cgraph.Graph) *cgraph.Node {
 	n = n.SetLabel(node.Id())
 	n = n.SetURL(node.Url)
 	n = n.SetShape(cgraph.BoxShape)
-	//n = n.SetTarget()
+	n = n.SetTarget("_blank")
 	return n
 }
