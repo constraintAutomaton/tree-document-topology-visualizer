@@ -11,8 +11,9 @@ import (
 func main() {
 	treeDocument := "https://demo.netwerkdigitaalerfgoed.nl/fragments/wo2/" //"http://localhost:3000/ldes/test"
 	graphPath := "./generated/graph.svg"
+	var limit uint = 10_000_00
 	fmt.Println("Starting")
-	queryOutput, err := communication.GetTreeRelation(treeDocument)
+	queryOutput, err := communication.GetTreeRelation(treeDocument, limit)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

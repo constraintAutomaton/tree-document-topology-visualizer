@@ -8,11 +8,27 @@ import (
 	"strings"
 )
 
-const BINARY_PATH = "./comunica-feature-link-traversal/engines/query-sparql-link-traversal/bin/query.js"
-const PATH_FILE_SPARQL_QUERY_GETTING_TREE_RELATIONS = "./communication/comunica_getting_relation_query"
+const (
+	DEFAULT_BINARY_PATH           = "./comunica-feature-link-traversal/engines/query-sparql-link-traversal/bin/query-dynamic.js"
+	SPARQL_QUERY_GET_ALL_RELATION = `
+PREFIX tree: <https://w3id.org/tree#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
-func GetTreeRelation(datasource string) ([]SparqlRelationOutput, error) {
-	command := fmt.Sprintf("node %v %v -f %v --lenient", BINARY_PATH, datasource, PATH_FILE_SPARQL_QUERY_GETTING_TREE_RELATIONS)
+SELECT ?node ?nextNode ?operator ?value WHERE {
+  ?node tree:relation ?relation .
+  ?relation tree:node ?nextNode .
+  
+  ?relation rdf:type ?operator.
+  ?relation tree:value ?value .
+}LIMIT %v`
+)
+
+var (
+	BINARY_PATH = DEFAULT_BINARY_PATH
+)
+
+func GetTreeRelation(datasource string, limit uint) ([]SparqlRelationOutput, error) {
+	command := fmt.Sprintf("node %v %v -q %v --lenient", BINARY_PATH, datasource, fmt.Sprintf(SPARQL_QUERY_GET_ALL_RELATION, limit))
 	parts := strings.Fields(command)
 	cmd := exec.Command(parts[0], parts[1:]...)
 	cmd.Env = os.Environ()
@@ -43,4 +59,8 @@ type SparqlRelationOutput struct {
 	Value    string
 	NextNode string
 	Node     string
+}
+
+func SetComunicaBinaryPath(path string) {
+	BINARY_PATH = path
 }
