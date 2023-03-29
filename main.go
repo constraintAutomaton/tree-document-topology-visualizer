@@ -17,9 +17,9 @@ var limit uint
 func main() {
 	cliParseCliArgs()
 	if limit == math.MaxUint {
-		fmt.Printf("Starting to get the relation in the data source {%v}\n", treeDocumentUrl)
+		fmt.Printf("Starting to get the relations in the data source {%v}\n", treeDocumentUrl)
 	} else {
-		fmt.Printf("Starting to get the relation with a limit of %v in the data source {%v}\n", limit, treeDocumentUrl)
+		fmt.Printf("Starting to get the relations with a limit of %v in the data source {%v}\n", limit, treeDocumentUrl)
 	}
 	queryOutput, err := communication.GetTreeRelation(treeDocumentUrl, limit)
 	if err != nil {

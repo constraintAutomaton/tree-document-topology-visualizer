@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"strings"
 	treegraph "tree-document-topology-visualizer/TREE-graph"
 
 	graphviz "github.com/goccy/go-graphviz"
@@ -87,7 +88,8 @@ func createNode(node treegraph.Node, graph *cgraph.Graph) *cgraph.Node {
 		log.Fatal(err)
 	}
 	n = n.SetLabel(node.Id())
-	n = n.SetURL(node.Url)
+	formateUrl := strings.ReplaceAll(node.Url, "&", "&amp;")
+	n = n.SetURL(formateUrl)
 	n = n.SetShape(cgraph.BoxShape)
 	n = n.SetTarget("_blank")
 	return n
