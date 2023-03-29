@@ -17,12 +17,12 @@ var limit uint
 func main() {
 	cliParseCliArgs()
 
-	fmt.Printf("Starting to get the relation of {%v}\n", treeDocumentUrl)
+	fmt.Printf("Starting to get the relation with a limit of %v using the data source {%v}\n", limit, treeDocumentUrl)
 	queryOutput, err := communication.GetTreeRelation(treeDocumentUrl, limit)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Relation fetched")
+	fmt.Printf("Relation %v fetched\n", len(queryOutput))
 	fmt.Println("Starting to generate a graph from the TREE relation")
 	graph := treegraph.NewGraphFromSparlRelationOutputs(queryOutput)
 	fmt.Println("Graph of the TREE document constituted")
