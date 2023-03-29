@@ -20,7 +20,7 @@ func NewGraphFromSparlRelationOutputs(outputs []communication.SparqlRelationOutp
 	for _, output := range outputs {
 		relation := Relation{
 			RawOperator: output.Operator,
-			RawLiteral:  output.Value,
+			Literal:     output.Value,
 			Destination: Node{Url: output.NextNode},
 		}
 		graph[Node{Url: output.Node}] = append(graph[Node{Url: output.Node}], relation)

@@ -47,7 +47,7 @@ func TestTheOperatorOfARelationShouldBeConvertable(t *testing.T) {
 	for k, v := range *treegraph.OperatorMapping() {
 		relation := treegraph.Relation{
 			RawOperator: k,
-			RawLiteral:  rawLiteral,
+			Literal:     rawLiteral,
 			Destination: destination,
 		}
 		if relation.Operator() != v {
@@ -69,72 +69,21 @@ func TestTheRelationShouldPanicIfItWasGivenAFaltyOperator(t *testing.T) {
 
 	relation := treegraph.Relation{
 		RawOperator: "",
-		RawLiteral:  rawLiteral,
+		Literal:     rawLiteral,
 		Destination: destination,
 	}
 	relation.Operator()
 }
 
-func TestARelationShouldBeAbleToConvertLiteralBetweenGuillemet(t *testing.T) {
-	aNode := treegraph.Node{Url: ""}
-	rawLiteral := "\"abc\""
-	destination := aNode
-
-	relation := treegraph.Relation{
-		RawOperator: "",
-		RawLiteral:  rawLiteral,
-		Destination: destination,
-	}
-	relation.Literal()
-}
-
-func TestARelationShouldPanicWhenTheLiteralIsHaveOnlyAGuillemetToTheRight(t *testing.T) {
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("The code did not panic")
-		}
-	}()
-
-	aNode := treegraph.Node{Url: ""}
-	rawLiteral := "\"abc"
-	destination := aNode
-
-	relation := treegraph.Relation{
-		RawOperator: "",
-		RawLiteral:  rawLiteral,
-		Destination: destination,
-	}
-	relation.Literal()
-}
-
-func TestARelationShouldPanicWhenTheLiteralIsHaveOnlyAGuillemetToTheLeft(t *testing.T) {
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("The code did not panic")
-		}
-	}()
-
-	aNode := treegraph.Node{Url: ""}
-	rawLiteral := "abc\""
-	destination := aNode
-
-	relation := treegraph.Relation{
-		RawOperator: "",
-		RawLiteral:  rawLiteral,
-		Destination: destination,
-	}
-	relation.Literal()
-}
-
 func TestARelationShouldReturnAnEquationOfTheRightFormat(t *testing.T) {
 	aNode := treegraph.Node{Url: ""}
-	rawLiteral := "\"2\""
+	rawLiteral := "2"
 	destination := aNode
 	correctEquation := "m > 2"
 
 	relation := treegraph.Relation{
 		RawOperator: "https://w3id.org/tree#GreaterThanRelation",
-		RawLiteral:  rawLiteral,
+		Literal:     rawLiteral,
 		Destination: destination,
 	}
 
@@ -157,30 +106,7 @@ func TestARelationShouldPanicIfTheOperatorIsNotValid(t *testing.T) {
 
 	relation := treegraph.Relation{
 		RawOperator: "https://w3id./tree#GreaterThanRelation",
-		RawLiteral:  rawLiteral,
-		Destination: destination,
-	}
-
-	if relation.Equation() != correctEquation {
-		t.Fatalf("The equation should be {%v} but it is {%v}", correctEquation, relation.Equation())
-	}
-}
-
-func TestARelationShouldPanicIfTheLiteralIsNotValid(t *testing.T) {
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("The code did not panic")
-		}
-	}()
-
-	aNode := treegraph.Node{Url: ""}
-	rawLiteral := "\"2"
-	destination := aNode
-	correctEquation := "m > 2"
-
-	relation := treegraph.Relation{
-		RawOperator: "https://w3id.org/tree#GreaterThanRelation",
-		RawLiteral:  rawLiteral,
+		Literal:     rawLiteral,
 		Destination: destination,
 	}
 
@@ -210,9 +136,9 @@ func TestCreateNewGraph(t *testing.T) {
 
 	expectedGraph := treegraph.Graph{
 		treegraph.Node{Url: "foo"}:  []treegraph.Relation{},
-		treegraph.Node{Url: "bar"}:  []treegraph.Relation{{RawOperator: rawOperator, RawLiteral: value, Destination: treegraph.Node{Url: "foo"}}},
+		treegraph.Node{Url: "bar"}:  []treegraph.Relation{{RawOperator: rawOperator, Literal: value, Destination: treegraph.Node{Url: "foo"}}},
 		treegraph.Node{Url: "foo2"}: []treegraph.Relation{},
-		treegraph.Node{Url: "bar2"}: []treegraph.Relation{{RawOperator: rawOperator, RawLiteral: value, Destination: treegraph.Node{Url: "foo2"}}},
+		treegraph.Node{Url: "bar2"}: []treegraph.Relation{{RawOperator: rawOperator, Literal: value, Destination: treegraph.Node{Url: "foo2"}}},
 	}
 
 	resp := treegraph.NewGraphFromSparlRelationOutputs(outputs)
@@ -251,9 +177,9 @@ func TestCreateNewGraphWithDestinationNodeWithRelation(t *testing.T) {
 	expectedGraph := treegraph.Graph{
 		treegraph.Node{Url: "foo"}:  []treegraph.Relation{},
 		treegraph.Node{Url: "bar3"}: []treegraph.Relation{},
-		treegraph.Node{Url: "bar"}:  []treegraph.Relation{{RawOperator: rawOperator, RawLiteral: value, Destination: treegraph.Node{Url: "foo"}}},
-		treegraph.Node{Url: "foo2"}: []treegraph.Relation{{RawOperator: rawOperator, RawLiteral: value, Destination: treegraph.Node{Url: "bar3"}}},
-		treegraph.Node{Url: "bar2"}: []treegraph.Relation{{RawOperator: rawOperator, RawLiteral: value, Destination: treegraph.Node{Url: "foo2"}}},
+		treegraph.Node{Url: "bar"}:  []treegraph.Relation{{RawOperator: rawOperator, Literal: value, Destination: treegraph.Node{Url: "foo"}}},
+		treegraph.Node{Url: "foo2"}: []treegraph.Relation{{RawOperator: rawOperator, Literal: value, Destination: treegraph.Node{Url: "bar3"}}},
+		treegraph.Node{Url: "bar2"}: []treegraph.Relation{{RawOperator: rawOperator, Literal: value, Destination: treegraph.Node{Url: "foo2"}}},
 	}
 
 	resp := treegraph.NewGraphFromSparlRelationOutputs(outputs)

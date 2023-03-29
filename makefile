@@ -20,9 +20,10 @@ build:
 
 build-all:
 	make build
-	cd ./comunica-feature-link-traversal && yarn install
+	cd ./comunica-js && yarn install
 
 test: 
+	cd test/communication && yarn install
 	$(GOTEST) -v ${TEST_PATH}
 clear: 
 	rm -f ${BUILD_PATH}/$(BINARY_NAME)
