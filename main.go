@@ -32,7 +32,7 @@ func main() {
 	fmt.Printf("Starting to generate the graph that will be outputed at path {%v}\n", graphPath)
 	visualization.GenerateGraphvizGraph(graph, graphPath)
 	fmt.Println("Visualization generated")
-	fmt.Println("Closing of the program, keep on living!")
+	fmt.Println("Closing of the program, keep on living.")
 
 }
 
