@@ -42,7 +42,7 @@ func GetTreeRelation(datasource string, limit uint) ([]SparqlRelationOutput, err
 	defer stderr.Close()
 
 	if err := cmd.Start(); err != nil {
-		return nil, fmt.Errorf("was not able to start the command return error {%v}", err.Error())
+		return nil, ProgramFailedError{Program: BINARY_PATH, Message: err.Error()}
 	}
 
 	buf := new(strings.Builder)
@@ -51,25 +51,18 @@ func GetTreeRelation(datasource string, limit uint) ([]SparqlRelationOutput, err
 		return nil, fmt.Errorf("unable to copy the error buffer return error {%v}", err)
 	}
 	if stringError := buf.String(); stringError != "" {
-		return nil, fmt.Errorf(stringError)
+		return nil, ProgramFailedError{Program: BINARY_PATH, Message: stringError}
 	}
 
 	sparqlRelation := []SparqlRelationOutput{}
 	if err := json.NewDecoder(stdout).Decode(&sparqlRelation); err != nil {
-		return nil, fmt.Errorf("was not able decode the JSON return error {%v}", err.Error())
+		return nil, UnableToDecodeJsonError{Message: err.Error()}
 	}
 
 	if err := cmd.Wait(); err != nil {
-		return nil, fmt.Errorf("was not able to wait the command return error {%v}", err.Error())
+		return nil, ProgramFailedError{Program: BINARY_PATH, Message: err.Error()}
 	}
 	return sparqlRelation, nil
-}
-
-type SparqlRelationOutput struct {
-	Operator string
-	Value    string
-	NextNode string
-	Node     string
 }
 
 func SetComunicaBinaryPath(path string) {
