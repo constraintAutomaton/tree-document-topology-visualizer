@@ -30,7 +30,10 @@ func main() {
 	graph := treegraph.NewGraphFromSparlRelationOutputs(queryOutput)
 	fmt.Println("Graph of the TREE document constituted")
 	fmt.Printf("Starting to generate the graph that will be outputed at path {%v}\n", graphPath)
-	visualization.GenerateGraphvizGraph(graph, graphPath)
+	err = visualization.GenerateGraphvizGraph(graph, graphPath)
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println("Visualization generated")
 	fmt.Println("Closing of the program, keep on living.")
 

@@ -12,13 +12,13 @@ import (
 	"github.com/goccy/go-graphviz/cgraph"
 )
 
-func GenerateGraphvizGraph(treeGraph treegraph.Graph, graphPath string) {
+func GenerateGraphvizGraph(treeGraph treegraph.Graph, graphPath string) error {
 	g := graphviz.New()
 	nodeRegistry := map[treegraph.Node]*cgraph.Node{}
 	graph, err := g.Graph()
 	graph = graph.SetRankDir(cgraph.LRRank)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer func() {
 		if err := graph.Close(); err != nil {
@@ -29,7 +29,10 @@ func GenerateGraphvizGraph(treeGraph treegraph.Graph, graphPath string) {
 
 	for node, relations := range treeGraph {
 		if _, exist := nodeRegistry[node]; !exist {
-			n := createNode(node, graph)
+			n, err := createNode(node, graph)
+			if err != nil {
+				return err
+			}
 			nodeRegistry[node] = n
 
 		}
@@ -40,57 +43,66 @@ func GenerateGraphvizGraph(treeGraph treegraph.Graph, graphPath string) {
 				destinationNode = n
 
 			} else {
-				n := createNode(relation.Destination, graph)
+				n, err := createNode(relation.Destination, graph)
+				if err != nil {
+					return err
+				}
 				nodeRegistry[relation.Destination] = n
 				destinationNode = n
 			}
 			e, err := graph.CreateEdge(relation.Equation(), nodeRegistry[node], destinationNode)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 			e.SetLabel(relation.Equation())
 		}
 	}
 	if extension := path.Ext(graphPath); extension != "" {
-		GenerateFile(g, graph, graphviz.Format(extension[1:]), graphPath)
+		err = GenerateFile(g, graph, graphviz.Format(extension[1:]), graphPath)
+		if err != nil {
+			return err
+		}
 	} else {
-		log.Fatalln("The path of the output graph as no extension")
+		return GraphFilePathNoExtension{Path: graphPath}
 	}
+
+	return nil
 }
 
-func GenerateFile(instance *graphviz.Graphviz, graph *cgraph.Graph, format graphviz.Format, path string) {
+func GenerateFile(instance *graphviz.Graphviz, graph *cgraph.Graph, format graphviz.Format, path string) error {
 	var buf bytes.Buffer
 	if err := instance.Render(graph, format, &buf); err != nil {
-		log.Fatal(err)
+		return err
 	}
 	if format == graphviz.XDOT {
 		f, err := os.Create(path) // creates a file at current directory
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		defer f.Close()
 		_, err = f.Write(buf.Bytes())
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 	} else {
 		if err := instance.RenderFilename(graph, format, path); err != nil {
-			log.Fatal(err)
+			return err
 		}
 	}
+	return nil
 
 }
 
-func createNode(node treegraph.Node, graph *cgraph.Graph) *cgraph.Node {
+func createNode(node treegraph.Node, graph *cgraph.Graph) (*cgraph.Node, error) {
 	node.BuildId()
 	n, err := graph.CreateNode(node.Url)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	n = n.SetLabel(node.Id())
 	formateUrl := strings.ReplaceAll(node.Url, "&", "&amp;")
 	n = n.SetURL(formateUrl)
 	n = n.SetShape(cgraph.BoxShape)
 	n = n.SetTarget("_blank")
-	return n
+	return n, nil
 }
