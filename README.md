@@ -73,7 +73,7 @@ Usage of ./build/tree-visualiser:
 
 ```
 ## Test
-To run all the test simply use
+To run all the tests simply use
 
 `make test`
 
