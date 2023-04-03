@@ -72,6 +72,10 @@ Usage of ./build/tree-visualiser:
         URL of the TREE document (default "http://localhost:3000/ldes/test")
 
 ```
+## Test
+To run all the test simply use
+
+`make test`
 
 ## TO DO
 
