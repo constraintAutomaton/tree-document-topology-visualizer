@@ -12,11 +12,6 @@ import (
 	"github.com/goccy/go-graphviz/cgraph"
 )
 
-type GraphvizTreeVisualizer struct {
-	instance *graphviz.Graphviz
-	graph    *cgraph.Graph
-}
-
 var graphvizValidFormat map[graphviz.Format]bool = map[graphviz.Format]bool{
 	graphviz.JPG:  true,
 	graphviz.PNG:  true,
@@ -24,42 +19,9 @@ var graphvizValidFormat map[graphviz.Format]bool = map[graphviz.Format]bool{
 	graphviz.XDOT: true,
 }
 
-func (g GraphvizTreeVisualizer) GenerateFile(graphPath string) error {
-	var buf bytes.Buffer
-	var format graphviz.Format
-	if extension := path.Ext(graphPath); extension != "" {
-		format = graphviz.Format(extension[1:])
-		if !isValidGraphvizFileFormat(format) {
-			return GraphFilePathInvalidFormat{format: string(format)}
-		}
-	} else {
-		return GraphFilePathNoExtension{Path: graphPath}
-	}
-
-	if err := g.instance.Render(g.graph, format, &buf); err != nil {
-		return err
-	}
-	if format == graphviz.XDOT {
-		f, err := os.Create(graphPath) // creates a file at current directory
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		_, err = f.Write(buf.Bytes())
-		if err != nil {
-			return err
-		}
-	} else {
-		if err := g.instance.RenderFilename(g.graph, format, graphPath); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func isValidGraphvizFileFormat(format graphviz.Format) bool {
-	_, exist := graphvizValidFormat[format]
-	return exist
+type GraphvizTreeVisualizer struct {
+	instance *graphviz.Graphviz
+	graph    *cgraph.Graph
 }
 
 func NewGraphvizTreeVisualizer(treeGraph treegraph.Graph) (Visualizer, error) {
@@ -111,6 +73,44 @@ func NewGraphvizTreeVisualizer(treeGraph treegraph.Graph) (Visualizer, error) {
 		instance: g,
 		graph:    graph,
 	}, nil
+}
+
+func (g GraphvizTreeVisualizer) GenerateFile(graphPath string) error {
+	var buf bytes.Buffer
+	var format graphviz.Format
+	if extension := path.Ext(graphPath); extension != "" {
+		format = graphviz.Format(extension[1:])
+		if !isValidGraphvizFileFormat(format) {
+			return GraphFilePathInvalidFormat{format: string(format)}
+		}
+	} else {
+		return GraphFilePathNoExtension{Path: graphPath}
+	}
+
+	if err := g.instance.Render(g.graph, format, &buf); err != nil {
+		return err
+	}
+	if format == graphviz.XDOT {
+		f, err := os.Create(graphPath) // creates a file at current directory
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+		_, err = f.Write(buf.Bytes())
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := g.instance.RenderFilename(g.graph, format, graphPath); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func isValidGraphvizFileFormat(format graphviz.Format) bool {
+	_, exist := graphvizValidFormat[format]
+	return exist
 }
 
 func createNode(node treegraph.Node, graph *cgraph.Graph) (*cgraph.Node, error) {
