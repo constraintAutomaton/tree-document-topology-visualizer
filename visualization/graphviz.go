@@ -91,7 +91,7 @@ func (g GraphvizTreeVisualizer) GenerateFile(graphPath string) error {
 		return err
 	}
 	if format == graphviz.XDOT {
-		f, err := os.Create(graphPath) // creates a file at current directory
+		f, err := os.Create(graphPath)
 		if err != nil {
 			return err
 		}
