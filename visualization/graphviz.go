@@ -8,17 +8,68 @@ import (
 	"strings"
 	treegraph "tree-document-topology-visualizer/TREE-graph"
 
+	"github.com/goccy/go-graphviz"
 	graphviz "github.com/goccy/go-graphviz"
 	"github.com/goccy/go-graphviz/cgraph"
 )
 
-func GenerateGraphvizGraph(treeGraph treegraph.Graph, graphPath string) error {
+type GraphvizTreeVisualizer struct {
+	instance *graphviz.Graphviz
+	graph    *cgraph.Graph
+}
+
+var graphvizValidFormat map[graphviz.Format]bool = map[graphviz.Format]bool{
+	graphviz.JPG:  true,
+	graphviz.PNG:  true,
+	graphviz.SVG:  true,
+	graphviz.XDOT: true,
+}
+
+func (g GraphvizTreeVisualizer) GenerateFile(graphPath string) error {
+	var buf bytes.Buffer
+	var format graphviz.Format
+	if extension := path.Ext(graphPath); extension != "" {
+		format = graphviz.Format(extension[1:])
+		if !isValidGraphvizFileFormat(format) {
+			return GraphFilePathInvalidFormat{format: string(format)}
+		}
+	} else {
+		return GraphFilePathNoExtension{Path: graphPath}
+	}
+
+	if err := g.instance.Render(g.graph, format, &buf); err != nil {
+		return err
+	}
+	if format == graphviz.XDOT {
+		f, err := os.Create(graphPath) // creates a file at current directory
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+		_, err = f.Write(buf.Bytes())
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := g.instance.RenderFilename(g.graph, format, graphPath); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func isValidGraphvizFileFormat(format graphviz.Format) bool {
+	_, exist := graphvizValidFormat[format]
+	return exist
+}
+
+func NewGraphvizTreeVisualizer(treeGraph treegraph.Graph) (Visualizer, error) {
 	g := graphviz.New()
 	nodeRegistry := map[treegraph.Node]*cgraph.Node{}
 	graph, err := g.Graph()
 	graph = graph.SetRankDir(cgraph.LRRank)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer func() {
 		if err := graph.Close(); err != nil {
@@ -31,7 +82,7 @@ func GenerateGraphvizGraph(treeGraph treegraph.Graph, graphPath string) error {
 		if _, exist := nodeRegistry[node]; !exist {
 			n, err := createNode(node, graph)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			nodeRegistry[node] = n
 
@@ -45,52 +96,22 @@ func GenerateGraphvizGraph(treeGraph treegraph.Graph, graphPath string) error {
 			} else {
 				n, err := createNode(relation.Destination, graph)
 				if err != nil {
-					return err
+					return nil, err
 				}
 				nodeRegistry[relation.Destination] = n
 				destinationNode = n
 			}
 			e, err := graph.CreateEdge(relation.Equation(), nodeRegistry[node], destinationNode)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			e.SetLabel(relation.Equation())
 		}
 	}
-	if extension := path.Ext(graphPath); extension != "" {
-		err = GenerateFile(g, graph, graphviz.Format(extension[1:]), graphPath)
-		if err != nil {
-			return err
-		}
-	} else {
-		return GraphFilePathNoExtension{Path: graphPath}
-	}
-
-	return nil
-}
-
-func GenerateFile(instance *graphviz.Graphviz, graph *cgraph.Graph, format graphviz.Format, path string) error {
-	var buf bytes.Buffer
-	if err := instance.Render(graph, format, &buf); err != nil {
-		return err
-	}
-	if format == graphviz.XDOT {
-		f, err := os.Create(path) // creates a file at current directory
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		_, err = f.Write(buf.Bytes())
-		if err != nil {
-			return err
-		}
-	} else {
-		if err := instance.RenderFilename(graph, format, path); err != nil {
-			return err
-		}
-	}
-	return nil
-
+	return GraphvizTreeVisualizer{
+		instance: g,
+		graph:    graph,
+	}, nil
 }
 
 func createNode(node treegraph.Node, graph *cgraph.Graph) (*cgraph.Node, error) {
