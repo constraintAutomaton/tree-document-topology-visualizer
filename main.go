@@ -29,13 +29,16 @@ func main() {
 	fmt.Println("Starting to generate a graph from the TREE relation")
 	graph := treegraph.NewGraphFromSparlRelationOutputs(queryOutput)
 	fmt.Println("Graph of the TREE document constituted")
-	fmt.Printf("Starting to generate the graph that will be outputed at path {%v}\n", graphPath)
-	err = visualization.GenerateGraphvizGraph(graph, graphPath)
+	fmt.Println("Starting to generate a visualizer graph")
+	visualizer, err := visualization.NewGraphvizTreeVisualizer(graph)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Visualization generated")
-	fmt.Println("Closing of the program, keep on living.")
+	fmt.Println("Visualizer generated")
+	fmt.Printf("Starting to generate the graph file at path {%v}\n", graphPath)
+	visualizer.GenerateFile(graphPath)
+	fmt.Println("Graph file generated")
+	fmt.Println("Closing of the program, Memento mori.")
 
 }
 

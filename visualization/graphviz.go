@@ -8,7 +8,6 @@ import (
 	"strings"
 	treegraph "tree-document-topology-visualizer/TREE-graph"
 
-	"github.com/goccy/go-graphviz"
 	graphviz "github.com/goccy/go-graphviz"
 	"github.com/goccy/go-graphviz/cgraph"
 )
