@@ -26,6 +26,7 @@ var (
 	BINARY_PATH = DEFAULT_BINARY_PATH
 )
 
+// GetTreeRelation fetch the relation of a TREE view with a SPARQL query using the SPARQL query engine Comunica.
 func GetTreeRelation(datasource string, limit uint) ([]SparqlRelationOutput, error) {
 	command := fmt.Sprintf(`node %v -d %v -q %v`, BINARY_PATH, datasource, fmt.Sprintf(SPARQL_QUERY_GET_ALL_RELATION, limit))
 	parts := strings.Fields(command)
@@ -65,6 +66,7 @@ func GetTreeRelation(datasource string, limit uint) ([]SparqlRelationOutput, err
 	return sparqlRelation, nil
 }
 
+// SetComunicaBinaryPath set a new path for the JavaScript binary of Comunica.
 func SetComunicaBinaryPath(path string) {
 	BINARY_PATH = path
 }

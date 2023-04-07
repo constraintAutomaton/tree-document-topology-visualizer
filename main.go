@@ -25,7 +25,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Relation %v fetched\n", len(queryOutput))
+	fmt.Printf("%v Relation(s) fetched\n", len(queryOutput))
 	fmt.Println("Starting to generate a graph from the TREE relation")
 	graph := treegraph.NewGraphFromSparlRelationOutputs(queryOutput)
 	fmt.Println("Graph of the TREE document constituted")

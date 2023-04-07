@@ -1,5 +1,6 @@
 package treegraph
 
+// OperatorMapping returned a map associating the IRI of an operator of a tree:relation with a more ergonomic label.
 func OperatorMapping() *map[string]string {
 	return &operatorMapping
 }

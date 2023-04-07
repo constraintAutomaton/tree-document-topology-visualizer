@@ -5,7 +5,7 @@ A software to draw the topology of a [TREE collection](https://treecg.github.io/
 
 ## How it work
 The processing can be divided into 4 steps;
-- Query the TREE collection to get the [tree:relation](https://treecg.github.io/specification/#Relation)
+- Query the TREE view to get the [tree:relation](https://treecg.github.io/specification/#Relation)
 - Build a graph from the `tree:relation`
 - Build a [graphviz graph](https://graphviz.org/)
 - Generate a graph file (supported file types: [`dot`, `svg`, `png`, `jpg`](https://github.com/goccy/go-graphviz))

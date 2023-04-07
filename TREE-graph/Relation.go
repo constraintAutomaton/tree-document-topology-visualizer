@@ -5,6 +5,7 @@ import (
 	"log"
 )
 
+// Relation represent a tree:relation.
 type Relation struct {
 	RawOperator string
 	Literal     string
@@ -19,6 +20,7 @@ func (r Relation) Operator() string {
 	return operator
 }
 
+// Equation translate the Relation into an ergonomic label.
 func (r Relation) Equation() string {
 	return fmt.Sprintf("m %v %v", r.Operator(), r.Literal)
 }

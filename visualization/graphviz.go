@@ -19,31 +19,36 @@ var graphvizValidFormat map[graphviz.Format]bool = map[graphviz.Format]bool{
 	graphviz.XDOT: true,
 }
 
+// GraphvizTreeVisualizer is a Visualizer instance for the library graphViz.
 type GraphvizTreeVisualizer struct {
 	instance *graphviz.Graphviz
 	graph    *cgraph.Graph
 }
 
+// Close close the channel between the go interface and the c implementation.
 func (g GraphvizTreeVisualizer) Close() {
 	if err := g.graph.Close(); err != nil {
 		log.Fatal(err)
 	}
 }
 
+// Graph returned the underlying graph of the GraphViz instance
 func (g GraphvizTreeVisualizer) Graph() cgraph.Graph {
 	return *g.graph
 }
 
+// NewGraphvizTreeVisualizer create a GraphvizTreeVisualizer from a TREE graph
 func NewGraphvizTreeVisualizer(treeGraph treegraph.Graph) (Visualizer, error) {
 	g := graphviz.New()
+	// we keep a registry of the node because we need them as parameters for the edges
 	nodeRegistry := map[treegraph.Node]*cgraph.Node{}
-	edgeRegistry := map[treegraph.Relation]*cgraph.Edge{}
 	graph, err := g.Graph()
 	graph = graph.SetRankDir(cgraph.LRRank)
 	if err != nil {
 		return nil, err
 	}
-
+	// We simply iterate over the graph and convert the node into GraphViz nodes and the relations into
+	// edges.
 	for node, relations := range treeGraph {
 		if _, exist := nodeRegistry[node]; !exist {
 			n, err := createNode(&node, graph)
@@ -53,12 +58,12 @@ func NewGraphvizTreeVisualizer(treeGraph treegraph.Graph) (Visualizer, error) {
 			nodeRegistry[node] = n
 
 		}
-
+		// To create an edge we need to specify the graphViz nodes.
+		// If the node exist inside our nodeRegistry we take it from here and if not we create a new node.
 		for _, relation := range relations {
 			var destinationNode *cgraph.Node
 			if n, exist := nodeRegistry[relation.Destination]; exist {
 				destinationNode = n
-
 			} else {
 				n, err := createNode(&relation.Destination, graph)
 				if err != nil {
@@ -68,7 +73,6 @@ func NewGraphvizTreeVisualizer(treeGraph treegraph.Graph) (Visualizer, error) {
 				destinationNode = n
 			}
 			e, err := graph.CreateEdge(relation.Equation(), nodeRegistry[node], destinationNode)
-			edgeRegistry[relation] = e
 			if err != nil {
 				return nil, err
 			}
@@ -82,16 +86,18 @@ func NewGraphvizTreeVisualizer(treeGraph treegraph.Graph) (Visualizer, error) {
 	}, nil
 }
 
+// GenerateFile generate a file from the graph of the GraphvizTreeVisualizer.
+// The format of the file is inferred from the extension of the path.
 func (g GraphvizTreeVisualizer) GenerateFile(graphPath string) error {
 	var buf bytes.Buffer
 	var format graphviz.Format
 	if extension := path.Ext(graphPath); extension != "" {
 		format = graphviz.Format(extension[1:])
 		if !isValidGraphvizFileFormat(format) {
-			return GraphFilePathInvalidFormat{format: string(format)}
+			return GraphFilePathInvalidFormatError{format: string(format)}
 		}
 	} else {
-		return GraphFilePathNoExtension{Path: graphPath}
+		return GraphFilePathNoExtensionError{Path: graphPath}
 	}
 
 	if err := g.instance.Render(g.graph, format, &buf); err != nil {
@@ -127,6 +133,7 @@ func createNode(node *treegraph.Node, graph *cgraph.Graph) (*cgraph.Node, error)
 		return nil, err
 	}
 	n = n.SetLabel(node.Id())
+	// we need this to respect the SVG specification
 	formateUrl := strings.ReplaceAll(node.Url, "&", "&amp;")
 	n = n.SetURL(formateUrl)
 	n = n.SetShape(cgraph.BoxShape)
