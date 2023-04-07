@@ -46,7 +46,7 @@ To build the software for a first-time
 
 It will build the main source code and the `javascript` code used to instantiate Comunica.
 
-### Main code
+### Main source code
 
 To only build the main source code
 
