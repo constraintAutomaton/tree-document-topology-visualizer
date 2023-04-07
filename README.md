@@ -92,13 +92,14 @@ The file type is inferred from the extension of the path passed to `-p`.
 
 
 ```
-Usage of ./build/tree-visualiser:
+Usage of ./build/tree-visualizer:
   -l uint
         The maximum number of relations (default 18446744073709551615)
   -p string
         Resulting path of the graph (default "./generated/graph.svg")
   -t string
         URL of the TREE document (default "http://localhost:3000/ldes/test")
+  -u    Make the graph unlabeled
 ```
 ## Test
 To run all the tests
