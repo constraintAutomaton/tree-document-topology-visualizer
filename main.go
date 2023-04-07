@@ -45,7 +45,7 @@ func main() {
 func cliParseCliArgs() {
 	flag.StringVar(&treeDocumentUrl, "t", "http://localhost:3000/ldes/test", "URL of the TREE document")
 	flag.StringVar(&graphPath, "p", "./generated/graph.svg", "Resulting path of the graph")
-	flag.UintVar(&limit, "l", math.MaxUint, "The maximum number of relation")
+	flag.UintVar(&limit, "l", math.MaxUint, "The maximum number of relations")
 	flag.Parse()
 
 }
