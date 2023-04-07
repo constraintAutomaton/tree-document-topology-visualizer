@@ -76,11 +76,9 @@ To build the code and then run it with the default parameters
 ## Usage
 
 
-To run with the default parameters simply
-
+To run with the default parameters
 
 `make run`
-
 
 The binary is located inside the `./build/tree-visualizer`.
 To display the help prompt use `-h`.
@@ -97,11 +95,9 @@ Usage of ./build/tree-visualiser:
         URL of the TREE document (default "http://localhost:3000/ldes/test")
 ```
 ## Test
-To run all the tests simply
-
+To run all the tests
 
 `make test`
-
 
 ## TO DO
 
