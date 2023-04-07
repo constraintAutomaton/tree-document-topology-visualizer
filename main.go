@@ -13,6 +13,7 @@ import (
 var treeDocumentUrl string
 var graphPath string
 var limit uint
+var unlabeled bool
 
 func main() {
 	cliParseCliArgs()
@@ -30,7 +31,7 @@ func main() {
 	graph := treegraph.NewGraphFromSparlRelationOutputs(queryOutput)
 	fmt.Println("Graph of the TREE document constituted")
 	fmt.Println("Starting to generate a visualizer graph")
-	visualizer, err := visualization.NewGraphvizTreeVisualizer(graph)
+	visualizer, err := visualization.NewGraphvizTreeVisualizer(graph, unlabeled)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,6 +47,7 @@ func cliParseCliArgs() {
 	flag.StringVar(&treeDocumentUrl, "t", "http://localhost:3000/ldes/test", "URL of the TREE document")
 	flag.StringVar(&graphPath, "p", "./generated/graph.svg", "Resulting path of the graph")
 	flag.UintVar(&limit, "l", math.MaxUint, "The maximum number of relations")
+	flag.BoolVar(&unlabeled, "u", false, "Indicate that the graph is unlabeled")
 	flag.Parse()
 
 }

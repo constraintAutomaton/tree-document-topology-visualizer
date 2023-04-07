@@ -38,7 +38,7 @@ func (g GraphvizTreeVisualizer) Graph() cgraph.Graph {
 }
 
 // NewGraphvizTreeVisualizer create a GraphvizTreeVisualizer from a TREE graph
-func NewGraphvizTreeVisualizer(treeGraph treegraph.Graph) (Visualizer, error) {
+func NewGraphvizTreeVisualizer(treeGraph treegraph.Graph, unlabeled bool) (Visualizer, error) {
 	g := graphviz.New()
 	// we keep a registry of the node because we need them as parameters for the edges
 	nodeRegistry := map[treegraph.Node]*cgraph.Node{}
@@ -51,7 +51,7 @@ func NewGraphvizTreeVisualizer(treeGraph treegraph.Graph) (Visualizer, error) {
 	// edges.
 	for node, relations := range treeGraph {
 		if _, exist := nodeRegistry[node]; !exist {
-			n, err := createNode(&node, graph)
+			n, err := createNode(&node, graph, unlabeled)
 			if err != nil {
 				return nil, err
 			}
@@ -65,18 +65,17 @@ func NewGraphvizTreeVisualizer(treeGraph treegraph.Graph) (Visualizer, error) {
 			if n, exist := nodeRegistry[relation.Destination]; exist {
 				destinationNode = n
 			} else {
-				n, err := createNode(&relation.Destination, graph)
+				n, err := createNode(&relation.Destination, graph, unlabeled)
 				if err != nil {
 					return nil, err
 				}
 				nodeRegistry[relation.Destination] = n
 				destinationNode = n
 			}
-			e, err := graph.CreateEdge(relation.Equation(), nodeRegistry[node], destinationNode)
+			_, err = createEdge(&relation, graph, nodeRegistry[node], destinationNode, unlabeled)
 			if err != nil {
 				return nil, err
 			}
-			e.SetLabel(relation.Equation())
 		}
 	}
 
@@ -126,17 +125,41 @@ func isValidGraphvizFileFormat(format graphviz.Format) bool {
 	return exist
 }
 
-func createNode(node *treegraph.Node, graph *cgraph.Graph) (*cgraph.Node, error) {
+func createNode(node *treegraph.Node, graph *cgraph.Graph, unlabeled bool) (*cgraph.Node, error) {
 	node.BuildId()
 	n, err := graph.CreateNode(node.Url)
 	if err != nil {
 		return nil, err
 	}
-	n = n.SetLabel(node.Id())
+	if unlabeled {
+		n = n.SetLabel("")
+		n = n.SetHeight(0.1)
+		n = n.SetShape(cgraph.CircleShape)
+
+	} else {
+		n = n.SetLabel(node.Id())
+		n = n.SetShape(cgraph.BoxShape)
+	}
 	// we need this to respect the SVG specification
 	formateUrl := strings.ReplaceAll(node.Url, "&", "&amp;")
 	n = n.SetURL(formateUrl)
-	n = n.SetShape(cgraph.BoxShape)
 	n = n.SetTarget("_blank")
 	return n, nil
+}
+
+func createEdge(
+	relation *treegraph.Relation,
+	graph *cgraph.Graph, origin *cgraph.Node,
+	destination *cgraph.Node,
+	unlabeled bool) (*cgraph.Edge, error) {
+	e, err := graph.CreateEdge(relation.Equation(), origin, destination)
+	if err != nil {
+		return nil, err
+	}
+	if unlabeled {
+		e.SetLabel("")
+	} else {
+		e.SetLabel(relation.Equation())
+	}
+	return e, nil
 }
