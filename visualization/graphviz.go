@@ -24,24 +24,29 @@ type GraphvizTreeVisualizer struct {
 	graph    *cgraph.Graph
 }
 
+func (g GraphvizTreeVisualizer) Close() {
+	if err := g.graph.Close(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func (g GraphvizTreeVisualizer) Graph() cgraph.Graph {
+	return *g.graph
+}
+
 func NewGraphvizTreeVisualizer(treeGraph treegraph.Graph) (Visualizer, error) {
 	g := graphviz.New()
 	nodeRegistry := map[treegraph.Node]*cgraph.Node{}
+	edgeRegistry := map[treegraph.Relation]*cgraph.Edge{}
 	graph, err := g.Graph()
 	graph = graph.SetRankDir(cgraph.LRRank)
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		if err := graph.Close(); err != nil {
-			log.Fatal(err)
-		}
-		g.Close()
-	}()
 
 	for node, relations := range treeGraph {
 		if _, exist := nodeRegistry[node]; !exist {
-			n, err := createNode(node, graph)
+			n, err := createNode(&node, graph)
 			if err != nil {
 				return nil, err
 			}
@@ -55,7 +60,7 @@ func NewGraphvizTreeVisualizer(treeGraph treegraph.Graph) (Visualizer, error) {
 				destinationNode = n
 
 			} else {
-				n, err := createNode(relation.Destination, graph)
+				n, err := createNode(&relation.Destination, graph)
 				if err != nil {
 					return nil, err
 				}
@@ -63,12 +68,14 @@ func NewGraphvizTreeVisualizer(treeGraph treegraph.Graph) (Visualizer, error) {
 				destinationNode = n
 			}
 			e, err := graph.CreateEdge(relation.Equation(), nodeRegistry[node], destinationNode)
+			edgeRegistry[relation] = e
 			if err != nil {
 				return nil, err
 			}
 			e.SetLabel(relation.Equation())
 		}
 	}
+
 	return GraphvizTreeVisualizer{
 		instance: g,
 		graph:    graph,
@@ -113,7 +120,7 @@ func isValidGraphvizFileFormat(format graphviz.Format) bool {
 	return exist
 }
 
-func createNode(node treegraph.Node, graph *cgraph.Graph) (*cgraph.Node, error) {
+func createNode(node *treegraph.Node, graph *cgraph.Graph) (*cgraph.Node, error) {
 	node.BuildId()
 	n, err := graph.CreateNode(node.Url)
 	if err != nil {

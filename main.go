@@ -38,15 +38,13 @@ func main() {
 	fmt.Printf("Starting to generate the graph file at path {%v}\n", graphPath)
 	visualizer.GenerateFile(graphPath)
 	fmt.Println("Graph file generated")
-	fmt.Println("Closing of the program, Memento mori.")
+	fmt.Println("Closing of the program.")
 
 }
 
 func cliParseCliArgs() {
 	flag.StringVar(&treeDocumentUrl, "t", "http://localhost:3000/ldes/test", "URL of the TREE document")
-
 	flag.StringVar(&graphPath, "p", "./generated/graph.svg", "Resulting path of the graph")
-
 	flag.UintVar(&limit, "l", math.MaxUint, "The maximum number of relation")
 	flag.Parse()
 
