@@ -1,6 +1,6 @@
 # Tree-document-topology-visualizer
 
-Software to draw the topology of a [TREE collection](https://treecg.github.io/specification/).
+Software to draw the topology of a [TREE view](https://treecg.github.io/specification/).
 
 
 <img src="./example.svg" alt="Example of a topology" width="400" height=500/> <img src="./example_unlabeled.svg" alt="Example of a topology" width="400" height=500/>
