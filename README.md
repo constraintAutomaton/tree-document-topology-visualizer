@@ -40,27 +40,29 @@ The graph is forwarded to the [`go-graphviz`](https://github.com/goccy/go-graphv
 ## Build
 
 ### First use
-To build the software for a first-time use
+To build the software for a first-time
 
 `make build-all`
 
-It will build the main code and the `javascript` code used to instantiate Comunica.
+It will build the main source code and the `javascript` code used to instantiate Comunica.
 
 ### Main code
 
-To only build the main code use
+To only build the main source code
 
 `make build`
 
+The binary will be located in `./build/tree-visualizer`
+
 ### Debugging
 
-To build the code and then run it with the default parameters use
+To build the code and then run it with the default parameters
 
 `make build-run`
 
 ## Usage
 
-To run with the default parameters simply use
+To run with the default parameters simply
 
 `make run`
 
@@ -79,7 +81,7 @@ Usage of ./build/tree-visualiser:
 
 ```
 ## Test
-To run all the tests simply use
+To run all the tests simply
 
 `make test`
 
