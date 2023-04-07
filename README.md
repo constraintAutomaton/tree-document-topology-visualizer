@@ -113,3 +113,17 @@ To run all the tests simply
 - [ ] Include an option to track the nodes that are traversed when executing a SPARQL query from an outsider Query engine.
 - [ ] Option to output an `html` file, with an interactive graph using JavaScript.
 - [ ] Create a web assembly binary.
+
+## Bib reference
+
+```bib
+@software{Tam_tree-document-topology-visualizer_2023,
+author = {Tam, Bryan-Elliott},
+doi = {10.5281/zenodo.1234},
+month = {4},
+title = {{tree-document-topology-visualizer}},
+url = {https://github.com/constraintAutomaton/tree-document-topology-visualizer},
+version = {1.0.0},
+year = {2023}
+}
+```
