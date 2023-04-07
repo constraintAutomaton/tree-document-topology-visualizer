@@ -28,7 +28,7 @@ var (
 
 // GetTreeRelation fetch the relation of a TREE view with a SPARQL query using the SPARQL query engine Comunica.
 func GetTreeRelation(datasource string, limit uint) ([]SparqlRelationOutput, error) {
-	command := fmt.Sprintf(`node %v -d %v -q %v`, BINARY_PATH, datasource, fmt.Sprintf(SPARQL_QUERY_GET_ALL_RELATION, limit))
+	command := fmt.Sprintf(`node --no-warnings %v -d %v -q %v`, BINARY_PATH, datasource, fmt.Sprintf(SPARQL_QUERY_GET_ALL_RELATION, limit))
 	parts := strings.Fields(command)
 	cmd := exec.Command(parts[0], parts[1:]...)
 	stdout, err := cmd.StdoutPipe()
