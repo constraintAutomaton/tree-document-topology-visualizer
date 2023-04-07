@@ -95,8 +95,6 @@ Usage of ./build/tree-visualiser:
         Resulting path of the graph (default "./generated/graph.svg")
   -t string
         URL of the TREE document (default "http://localhost:3000/ldes/test")
-
-
 ```
 ## Test
 To run all the tests simply
