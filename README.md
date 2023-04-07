@@ -2,6 +2,8 @@
 
 Software to draw the topology of a [TREE collection](https://treecg.github.io/specification/).
 
+<img src="./example.svg" alt="Example of a topology" width="200"/>
+
 ## How it work
 The processing can be divided into 4 steps;
 - Query the TREE view to get the [tree:relation](https://treecg.github.io/specification/#Relation)
