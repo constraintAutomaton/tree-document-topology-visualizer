@@ -3,7 +3,7 @@
 Software to draw the topology of a [TREE collection](https://treecg.github.io/specification/).
 
 
-<img src="./example.svg" alt="Example of a topology" width="500" height=500/> <img src="./example_unlabeled.svg" alt="Example of a topology" width="500" height=500/>
+<img src="./example.svg" alt="Example of a topology" width="300" height=500/> <img src="./example_unlabeled.svg" alt="Example of a topology" width="300" height=500/>
 
 
 
