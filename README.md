@@ -24,7 +24,7 @@ SELECT ?node ?nextNode ?operator ?value WHERE {
   
   ?relation rdf:type ?operator.
   ?relation tree:value ?value .
-}LIMIT {limit}
+} LIMIT {limit}
 ```
 We then build a graph from the query response where the vertices are composed with the variables from the SPARQL query `?node` and `?nextNode` and the edges are characterized with the pair (`?node`, `?nextNode`) and are "weighted" with the boolean expression composes with the SPARQL variable `?operator` `?value`.
 
