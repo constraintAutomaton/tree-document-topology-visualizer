@@ -108,8 +108,8 @@ To run all the tests
 ## TO DO
 
 
-- [ ] Make a streaming version of the program where the graph is generated as the relations are discovered.
-- [ ] Make a mode to handle simpler `tree:relation` without using optional statements in the SPARQL query as it really slows down the execution.
+- [ ] Make a streaming version of the program where the graph is generated has the relations are discovered.
+- [ ] Make a mode to handle simpler `tree:relation` without using optional statements in the SPARQL query has it greatly slows down the execution time.
 - [ ] Include an option to track the nodes that are traversed when executing a SPARQL query from an outsider Query engine.
 - [ ] Option to output an `html` file, with an interactive graph using JavaScript.
 - [ ] Create a web assembly binary.
