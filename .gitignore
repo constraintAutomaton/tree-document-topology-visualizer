@@ -4,3 +4,4 @@ generated/*
 !generated/.gitkeep
 test/visualization/temp/*
 !test/visualization/temp/.gitkeep
+componentsjs-error-state.json

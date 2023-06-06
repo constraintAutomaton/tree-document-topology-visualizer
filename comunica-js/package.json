@@ -4,7 +4,8 @@
   "main": "index.mjs",
   "license": "MIT",
   "dependencies": {
-    "@comunica/query-sparql-link-traversal": "^0.1.1",
+    "@comunica/actor-extract-links-tree": "^0.2.0",
+    "@comunica/query-sparql-link-traversal": "^0.2.0",
     "commander": "^10.0.0"
   }
 }

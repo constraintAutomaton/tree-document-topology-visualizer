@@ -20,6 +20,7 @@ build:
 
 build-all:
 	make build
+	cd ./comunica-js/comunica-feature-link-traversal && yarn install
 	cd ./comunica-js && yarn install
 
 test: 

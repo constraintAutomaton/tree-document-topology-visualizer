@@ -1,5 +1,6 @@
-import { Command, createOption } from 'commander';
-import { QueryEngineFactory } from '@comunica/query-sparql-link-traversal'
+import { Command } from 'commander';
+import { QueryEngineFactory } from "@comunica/query-sparql-link-traversal";
+import { KeysExtractLinksTree } from '@comunica/context-entries-link-traversal';
 
 const program = new Command();
 
@@ -12,16 +13,17 @@ const options = program.opts();
 
 const query = options.query.join(' ');
 const datasource = options.dataSource;
-const config = "./comunica_config.json"
+const config = "./comunica-js/config.json";
 
 function getRelations() {
-    return  new Promise( async (resolve, reject) => {
+    return new Promise(async (resolve, _reject) => {
         const result = [];
         const engine = await new QueryEngineFactory().create({ configPath: config });
         const bindingsStream = await engine.queryBindings(query,
             {
                 sources: [datasource],
                 lenient: true,
+                [KeysExtractLinksTree.strictTraversal.name]: false,
             });
         bindingsStream.on('data', (binding) => {
             result.push(
@@ -34,15 +36,15 @@ function getRelations() {
             )
         });
 
-        bindingsStream.on('error', (error) => {
+        bindingsStream.on('error', (_error) => {
             resolve(result);
         });
 
         bindingsStream.on('end', () => {
             resolve(result)
         });
-      });
-   
+    });
+
 
 }
 
