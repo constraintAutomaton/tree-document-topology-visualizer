@@ -14,7 +14,6 @@ all:
 	test build
 build:
 	${GOGET}
-	git submodule update --init --recursive
 	mkdir -p ${BUILD_PATH}
 	${GOBUILD} -o ${BUILD_PATH}/${BINARY_NAME}
 
