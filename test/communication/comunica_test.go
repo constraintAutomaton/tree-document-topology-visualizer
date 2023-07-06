@@ -19,6 +19,20 @@ func TestGetTreeRelations(t *testing.T) {
 	}
 }
 
+func TestGetTreeRelationsWitComponentjsWarning(t *testing.T) {
+	A_DATASOURCE := "foo"                                                      // doesn't matter
+	A_LIMIT := uint(0)                                                         // doesn't matter always return 5 results
+	communication.SetComunicaBinaryPath("./mock_with_componentjs_warning.mjs") // the program will fail if no query or data source was passed
+	sparqlOutput, err := communication.GetTreeRelation(A_DATASOURCE, A_LIMIT)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(sparqlOutput) != 5 {
+		t.Fatalf("should had 5 outputs but has %v output", len(sparqlOutput))
+	}
+}
+
 func TestGetTreeRelationProgramReturnError(t *testing.T) {
 	A_DATASOURCE := "foo" // doesn't matter
 	A_LIMIT := uint(0)    //doesn't matter

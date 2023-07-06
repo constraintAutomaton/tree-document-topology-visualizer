@@ -3,23 +3,13 @@ package communication
 import (
 	"encoding/json"
 	"fmt"
-	"io"
+	"os"
 	"os/exec"
 	"strings"
 )
 
 const (
-	DEFAULT_BINARY_PATH           = "./comunica-js/index.mjs"
-	SPARQL_QUERY_GET_ALL_RELATION = `PREFIX tree: <https://w3id.org/tree#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-
-SELECT ?node ?nextNode ?operator ?value WHERE {
-  ?node tree:relation ?relation .
-  ?relation tree:node ?nextNode .
-  
-  ?relation rdf:type ?operator.
-  ?relation tree:value ?value .
-}LIMIT %v`
+	DEFAULT_BINARY_PATH = "./comunica-js/index.mjs"
 )
 
 var (
@@ -28,45 +18,38 @@ var (
 
 // GetTreeRelation fetch the relation of a TREE view with a SPARQL query using the SPARQL query engine Comunica.
 func GetTreeRelation(datasource string, limit uint) ([]SparqlRelationOutput, error) {
-	command := fmt.Sprintf(`node --no-warnings %v -d %v -q %v`, BINARY_PATH, datasource, fmt.Sprintf(SPARQL_QUERY_GET_ALL_RELATION, limit))
+	command := fmt.Sprintf(`node --no-warnings %v -d %v -l %v`, BINARY_PATH, datasource, limit)
 	parts := strings.Fields(command)
 	cmd := exec.Command(parts[0], parts[1:]...)
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return nil, fmt.Errorf("was not able to get the stdout with error {%v}", err.Error())
-	}
-	defer stdout.Close()
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return nil, fmt.Errorf("was not able to get the stdout with error {%v}", err.Error())
-	}
-	defer stderr.Close()
+	result_saver := saveSparqlResult{Results: []SparqlRelationOutput{}}
+
+	cmd.Stdout = &result_saver
 
 	if err := cmd.Start(); err != nil {
-		return nil, ProgramFailedError{Program: BINARY_PATH, Message: err.Error()}
-	}
-
-	buf := new(strings.Builder)
-	_, err = io.Copy(buf, stderr)
-	if err != nil {
-		return nil, fmt.Errorf("unable to copy the error buffer return error {%v}", err)
-	}
-	if stringError := buf.String(); stringError != "" {
-		return nil, ProgramFailedError{Program: BINARY_PATH, Message: stringError}
-	}
-
-	sparqlRelation := []SparqlRelationOutput{}
-	if err := json.NewDecoder(stdout).Decode(&sparqlRelation); err != nil {
-		return nil, UnableToDecodeJsonError{Message: err.Error()}
+		//return nil, ProgramFailedError{Program: BINARY_PATH, Message: err.Error()}
 	}
 
 	if err := cmd.Wait(); err != nil {
-		return nil, ProgramFailedError{Program: BINARY_PATH, Message: err.Error()}
+		//return nil, ProgramFailedError{Program: BINARY_PATH, Message: err.Error()}
 	}
-	return sparqlRelation, nil
+	return result_saver.Results, nil
 }
 
 // SetComunicaBinaryPath set a new path for the JavaScript binary of Comunica.
 func SetComunicaBinaryPath(path string) {
 	BINARY_PATH = path
+}
+
+type saveSparqlResult struct {
+	Results []SparqlRelationOutput
+}
+
+func (s *saveSparqlResult) Write(p []byte) (n int, err error) {
+	currentRelation := SparqlRelationOutput{}
+	if err := json.Unmarshal(p, &currentRelation); err != nil {
+		return 0, err
+	}
+	fmt.Println(currentRelation)
+	s.Results = append(s.Results, currentRelation)
+	return os.Stdout.Write(p)
 }
